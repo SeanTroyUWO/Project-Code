@@ -17,6 +17,8 @@
 #include <Wire.h>
 #include <I2CEncoder.h>
 
+#include <SoftwareSerial.h> //Not sure where to get this if you don't already have it.
+
 Servo servo_RightMotor;
 Servo servo_LeftMotor;
 Servo servo_ArmMotor;
@@ -24,6 +26,8 @@ Servo servo_GripMotor;
 
 I2CEncoder encoder_RightMotor;
 I2CEncoder encoder_LeftMotor;
+
+SoftwareSerial IRSensor(A3, A3);
 
 
 // Uncomment keywords to enable debugging output
@@ -139,6 +143,7 @@ unsigned long EchoTimeFront;
 bool CubeDetected = false;
 long int StageCounter = 1;
 bool Corner = false;
+bool PyramidFound = false;
 
 //-----------------------------------------------------------------------------
 
@@ -166,6 +171,9 @@ void setup() {
 
   //set up limit switch
   pinMode(LimitSwitch, OUTPUT);
+
+  IRSensor.begin(2400);
+  pinMode(A3, INPUT); //Use these in set up. It's important
 
 
 
@@ -281,6 +289,11 @@ void loop()
           }
 
 
+        }
+
+        if (StageCounter == 2)
+        {
+          FindPyramid();
         }
 
 
