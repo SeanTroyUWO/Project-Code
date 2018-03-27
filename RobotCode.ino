@@ -54,8 +54,7 @@ const int ci_Charlieplex_LED3 = 6;
 const int ci_Charlieplex_LED4 = 7;
 const int ci_Mode_Button = 7;
 
-const int ci_Arm_Motor = 10;
-const int ci_Grip_Motor = 11;
+
 const int ci_Motor_Enable_Switch = 12;
 
 const int ci_Light_Sensor = A3;
@@ -128,14 +127,16 @@ boolean bt_Cal_Initialized = false;
 //---------------------------- VARIABLES AND PIN ASSINGMENTS ------------------------------------------------
 const int ci_Ultrasonic_Ping = 2;   //input plug
 const int ci_Ultrasonic_Data = 3;   //output plug
-const int ci_Ultrasonic_PingFront = 4;  //input plug
-const int ci_Ultrasonic_DataFront = 5;  //output plug
+//const int ci_Ultrasonic_PingFront = 4;  //input plug
+//const int ci_Ultrasonic_DataFront = 5;  //output plug
 
+const int LimitSwitch = 6;
 
 const int ci_Right_Motor = 8;
 const int ci_Left_Motor = 9;
 
-const int LimitSwitch = 6;
+
+
 
 unsigned int ui_Left_Motor_Speed;
 unsigned int ui_Right_Motor_Speed;
@@ -149,6 +150,7 @@ bool CubeDetected = false;
 long int StageCounter = 1;
 bool Corner = false;
 bool PyramidFound = false;
+int ArmLocation1 = 90;
 
 
 //-----------------------------------------------------------------------------
@@ -166,8 +168,8 @@ void setup() {
   pinMode(ci_Ultrasonic_Data, INPUT);
 
   //set up front ultrasonic
-  pinMode(ci_Ultrasonic_PingFront, OUTPUT);
-  pinMode(ci_Ultrasonic_DataFront, INPUT);
+//  pinMode(ci_Ultrasonic_PingFront, OUTPUT);
+  //pinMode(ci_Ultrasonic_DataFront, INPUT);
 
   // set up drive motors
   pinMode(ci_Right_Motor, OUTPUT);
@@ -182,20 +184,16 @@ void setup() {
   pinMode(A3, INPUT); //Use these in set up. It's important
 
   //Set up Cube Grabbing servo
-  CubeMotor.attach(6);
-  CubeMotor.write(0);
+  CubeMotor.attach(10);
+  CubeMotor.write(180);
 
   //Set up cube grabbing arm servo
-  ArmMotor.attach(7);
-  ArmMotor.write(0);
-  
+  ArmMotor.attach(11);
+  ArmMotor.write(90);
 
 
-  // set up arm motors
-  pinMode(ci_Arm_Motor, OUTPUT);
-  servo_ArmMotor.attach(ci_Arm_Motor);
-  pinMode(ci_Grip_Motor, OUTPUT);
-  servo_GripMotor.attach(ci_Grip_Motor);
+
+
 
   // set up motor enable switch
   pinMode(ci_Motor_Enable_Switch, INPUT);
@@ -266,9 +264,10 @@ void loop()
   {
     case 0:    //Robot stopped
       {
+
         Serial.println(EchoTimeSide / 58.0);
         Ping();
-        PingFront();
+       // PingFront();
         servo_LeftMotor.writeMicroseconds(ci_Left_Motor_Stop);
         servo_RightMotor.writeMicroseconds(ci_Right_Motor_Stop);
         servo_ArmMotor.write(ci_Arm_Servo_Retracted);
@@ -285,6 +284,7 @@ void loop()
 
     case 1:    //Robot Run after 3 seconds
       {
+
         //Find Cube
         if (StageCounter == 1)
         {
@@ -466,7 +466,7 @@ void Ping()
 
 
 // measure distance to target using ultrasonic sensor in the FRONT
-void PingFront()
+/*void PingFront()
 {
   //Ping Ultrasonic
   //Send the Ultrasonic Range Finder a 10 microsecond pulse per tech spec
@@ -487,6 +487,10 @@ void PingFront()
   Serial.println(EchoTimeFront / 58); //divide time by 58 to get distance in cm
 #endif
 }
+*/
+
+
+
 
 
 
