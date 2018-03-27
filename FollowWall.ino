@@ -2,7 +2,7 @@ void FollowWall()
 {
   ArmMotor.detach();
   Ping();
-//  PingFront();
+  //  PingFront();
 
   if (Corner == false)
   {
@@ -28,15 +28,15 @@ void FollowWall()
 
     // Front Sensor
     /*else if ((EchoTimeFront / 58.0) < 3)        //If front sensor detects wall...stop
-    {
+      {
       servo_LeftMotor.writeMicroseconds(1500);
       servo_RightMotor.writeMicroseconds(1500);
-     // Serial.println(EchoTimeFront / 58.0);
+      // Serial.println(EchoTimeFront / 58.0);
       Serial.println("STOP");
 
       Corner = true;
 
-    }*/
+      }*/
 
     else                                             //go straight
     {
@@ -52,6 +52,8 @@ void FollowWall()
 /*
   if (Corner == true)
   {
+
+    ArmMotor.write(180);
 
     if ((EchoTimeFront / 58.0) < 5)
     {
@@ -90,6 +92,7 @@ void FollowWall()
 
   }
   */
+
 
 
 

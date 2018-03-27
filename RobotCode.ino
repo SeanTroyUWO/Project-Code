@@ -168,7 +168,7 @@ void setup() {
   pinMode(ci_Ultrasonic_Data, INPUT);
 
   //set up front ultrasonic
-//  pinMode(ci_Ultrasonic_PingFront, OUTPUT);
+  //  pinMode(ci_Ultrasonic_PingFront, OUTPUT);
   //pinMode(ci_Ultrasonic_DataFront, INPUT);
 
   // set up drive motors
@@ -178,7 +178,7 @@ void setup() {
   servo_LeftMotor.attach(ci_Left_Motor);
 
   //set up limit switch
-  pinMode(LimitSwitch, OUTPUT);
+  pinMode(LimitSwitch, INPUT);
 
   IRSensor.begin(2400);
   pinMode(A3, INPUT); //Use these in set up. It's important
@@ -189,6 +189,8 @@ void setup() {
 
   //Set up cube grabbing arm servo
   ArmMotor.attach(11);
+  ArmMotor.write(0);
+  delay(1000);
   ArmMotor.write(90);
 
 
@@ -267,11 +269,11 @@ void loop()
 
         Serial.println(EchoTimeSide / 58.0);
         Ping();
-       // PingFront();
+        // PingFront();
         servo_LeftMotor.writeMicroseconds(ci_Left_Motor_Stop);
         servo_RightMotor.writeMicroseconds(ci_Right_Motor_Stop);
-        servo_ArmMotor.write(ci_Arm_Servo_Retracted);
-        servo_GripMotor.write(ci_Grip_Motor_Closed);
+        CubeMotor.write(180);
+        ArmMotor.write(90);
         encoder_LeftMotor.zero();
         encoder_RightMotor.zero();
         ui_Mode_Indicator_Index = 0;
@@ -298,6 +300,7 @@ void loop()
           //if cube is detected...get cube
           if (CubeDetected == true)
           {
+            Serial.println("Cube flag UP");
             Cube();
 
           }
@@ -467,7 +470,7 @@ void Ping()
 
 // measure distance to target using ultrasonic sensor in the FRONT
 /*void PingFront()
-{
+  {
   //Ping Ultrasonic
   //Send the Ultrasonic Range Finder a 10 microsecond pulse per tech spec
   digitalWrite(ci_Ultrasonic_PingFront, HIGH);
@@ -478,15 +481,15 @@ void Ping()
   EchoTimeFront = pulseIn(ci_Ultrasonic_DataFront, HIGH, 10000);
 
   // Print Sensor Readings
-#ifdef DEBUG_ULTRASONIC
+  #ifdef DEBUG_ULTRASONIC
   Serial.print("Time (microseconds): ");
   Serial.print(EchoTimeFront, DEC);
   Serial.print(", Inches: ");
   Serial.print(EchoTimeFront / 148); //divide time by 148 to get distance in inches
   Serial.print(", cm: ");
   Serial.println(EchoTimeFront / 58); //divide time by 58 to get distance in cm
-#endif
-}
+  #endif
+  }
 */
 
 

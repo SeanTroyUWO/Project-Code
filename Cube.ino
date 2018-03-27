@@ -2,14 +2,14 @@ void Cube()
 {
 
   //when limit switch detects cube...stop robot
-  if (LimitSwitch == HIGH)
+  if (digitalRead(LimitSwitch) == LOW)
   {
 
     servo_LeftMotor.writeMicroseconds(1500);
     servo_RightMotor.writeMicroseconds(1500);
     Serial.println("Cube Detected");
 
-    CubeDetected == true;
+    CubeDetected = true;
 
 
   }
@@ -21,7 +21,10 @@ void Cube()
     //get cube
 
     ArmMotor.detach();
-    CubeMotor.write(0);
+    CubeMotor.write(45);
+
+    delay(3000);
+
     Serial.println("Cube has been grabbed");
 
     CubeGrabbed = true;
@@ -29,15 +32,19 @@ void Cube()
 
   }
 
+ 
+
 
   if (CubeGrabbed == true)
   {
-
+    ArmMotor.attach(11);
     ArmMotor.write(0);
+    delay(2000);
     Serial.println("Ready to drop cube");
 
     CubeMotor.write(180);
     Serial.println("Cube Dropped");
+    
 
     //Next Stage
     StageCounter = 2;
