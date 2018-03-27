@@ -24,6 +24,9 @@ Servo servo_LeftMotor;
 Servo servo_ArmMotor;
 Servo servo_GripMotor;
 
+Servo CubeMotor;    //for cube grabbing motor
+Servo ArmMotor;     // arm for cube grabbing motor
+
 I2CEncoder encoder_RightMotor;
 I2CEncoder encoder_LeftMotor;
 
@@ -128,6 +131,7 @@ const int ci_Ultrasonic_Data = 3;   //output plug
 const int ci_Ultrasonic_PingFront = 4;  //input plug
 const int ci_Ultrasonic_DataFront = 5;  //output plug
 
+
 const int ci_Right_Motor = 8;
 const int ci_Left_Motor = 9;
 
@@ -140,10 +144,12 @@ long l_Right_Motor_Position;
 unsigned long EchoTimeSide;
 unsigned long EchoTimeFront;
 
+bool CubeGrabbed = false;
 bool CubeDetected = false;
 long int StageCounter = 1;
 bool Corner = false;
 bool PyramidFound = false;
+
 
 //-----------------------------------------------------------------------------
 
@@ -175,6 +181,14 @@ void setup() {
   IRSensor.begin(2400);
   pinMode(A3, INPUT); //Use these in set up. It's important
 
+  //Set up Cube Grabbing servo
+  CubeMotor.attach(6);
+  CubeMotor.write(0);
+
+  //Set up cube grabbing arm servo
+  ArmMotor.attach(7);
+  ArmMotor.write(0);
+  
 
 
   // set up arm motors

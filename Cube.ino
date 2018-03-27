@@ -20,14 +20,28 @@ void Cube()
 
     //get cube
 
-    //when we have cube
-    StageCounter++;
+    CubeMotor.write(90);
+    Serial.println("Cube has been grabbed");
+
+    CubeGrabbed = true;
+
 
   }
 
 
+  if (CubeGrabbed == true)
+  {
 
+    ArmMotor.write(180);
+    Serial.println("Ready to drop cube");
 
+    CubeMotor.write(0);
+    Serial.println("Cube Dropped");
+
+    //Next Stage
+    StageCounter = 2;
+
+  }
 
 
 
