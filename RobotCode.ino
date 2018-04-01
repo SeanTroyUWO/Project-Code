@@ -21,11 +21,12 @@
 
 Servo servo_RightMotor;
 Servo servo_LeftMotor;
-Servo servo_ArmMotor;
-Servo servo_GripMotor;
+
 
 Servo CubeMotor;    //for cube grabbing motor
 Servo ArmMotor;     // arm for cube grabbing motor
+Servo LAPyramid;    //motor for linear actuator to collect pyramid
+Servo PivotMotor;   //drop down arm to grab and pivot puramid
 
 I2CEncoder encoder_RightMotor;
 I2CEncoder encoder_LeftMotor;
@@ -127,8 +128,8 @@ boolean bt_Cal_Initialized = false;
 //---------------------------- VARIABLES AND PIN ASSINGMENTS ------------------------------------------------
 const int ci_Ultrasonic_Ping = 2;   //input plug
 const int ci_Ultrasonic_Data = 3;   //output plug
-//const int ci_Ultrasonic_PingFront = 4;  //input plug
-//const int ci_Ultrasonic_DataFront = 5;  //output plug
+const int ci_Ultrasonic_PingFront = 4;  //input plug
+const int ci_Ultrasonic_DataFront = 5;  //output plug
 
 const int LimitSwitch = 6;
 
@@ -168,8 +169,8 @@ void setup() {
   pinMode(ci_Ultrasonic_Data, INPUT);
 
   //set up front ultrasonic
-  //  pinMode(ci_Ultrasonic_PingFront, OUTPUT);
-  //pinMode(ci_Ultrasonic_DataFront, INPUT);
+  pinMode(ci_Ultrasonic_PingFront, OUTPUT);
+  pinMode(ci_Ultrasonic_DataFront, INPUT);
 
   // set up drive motors
   pinMode(ci_Right_Motor, OUTPUT);
@@ -192,6 +193,19 @@ void setup() {
   ArmMotor.write(0);
   delay(1000);
   ArmMotor.write(90);
+
+  //Set up LAMotor for pyramid
+  LAPyramid.attach(12);
+  LAPyramid.write(0);
+  LAPyramid.detach();
+
+  //Set up pivot motor
+  PivotMotor.attach(13);
+  PivotMotor.write(0);
+  PivotMotor.detach();
+
+
+
 
 
 
@@ -305,21 +319,31 @@ void loop()
 
           }
 
-
         }
 
+        //Find Pyramid
         if (StageCounter == 2)
         {
           FindPyramid();
         }
 
+        //Get Pyramid + Tilt it
+        if (StageCounter == 3)
+        {
+          GetPyramid();
+        }
+
+        //Put cube inside pyramid
+        if (StageCounter == 4)
+        {
+          FinalStep();
+        }
 
 
 
 
 
-        //servo_LeftMotor.writeMicroseconds(1700);
-        //servo_RightMotor.writeMicroseconds(1700);
+
 
 #ifdef DEBUG_ENCODERS
         l_Left_Motor_Position = encoder_LeftMotor.getRawPosition();
@@ -469,8 +493,8 @@ void Ping()
 
 
 // measure distance to target using ultrasonic sensor in the FRONT
-/*void PingFront()
-  {
+void PingFront()
+{
   //Ping Ultrasonic
   //Send the Ultrasonic Range Finder a 10 microsecond pulse per tech spec
   digitalWrite(ci_Ultrasonic_PingFront, HIGH);
@@ -481,16 +505,16 @@ void Ping()
   EchoTimeFront = pulseIn(ci_Ultrasonic_DataFront, HIGH, 10000);
 
   // Print Sensor Readings
-  #ifdef DEBUG_ULTRASONIC
+#ifdef DEBUG_ULTRASONIC
   Serial.print("Time (microseconds): ");
   Serial.print(EchoTimeFront, DEC);
   Serial.print(", Inches: ");
   Serial.print(EchoTimeFront / 148); //divide time by 148 to get distance in inches
   Serial.print(", cm: ");
   Serial.println(EchoTimeFront / 58); //divide time by 58 to get distance in cm
-  #endif
-  }
-*/
+#endif
+}
+
 
 
 

@@ -32,6 +32,7 @@ void FindPyramid()
       PyramidFound = false;
     }
 
+
   }
 
 
@@ -41,6 +42,16 @@ void FindPyramid()
   {
     servo_LeftMotor.writeMicroseconds(1600);
     servo_RightMotor.writeMicroseconds(1600);
+
+    if (EchoTimeFront <= 3)
+    {
+      servo_LeftMotor.writeMicroseconds(1500);
+      servo_RightMotor.writeMicroseconds(1500);
+
+      StageCounter = 3;
+
+    }
+    
   }
 
 
