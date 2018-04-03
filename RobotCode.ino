@@ -126,8 +126,8 @@ boolean bt_Do_Once = false;
 boolean bt_Cal_Initialized = false;
 
 //---------------------------- VARIABLES AND PIN ASSINGMENTS ------------------------------------------------
-const int ci_Ultrasonic_Ping = 2;   //input plug
-const int ci_Ultrasonic_Data = 3;   //output plug
+const int ci_Ultrasonic_Ping = 2;       //input plug
+const int ci_Ultrasonic_Data = 3;       //output plug
 const int ci_Ultrasonic_PingFront = 4;  //input plug
 const int ci_Ultrasonic_DataFront = 5;  //output plug
 
@@ -135,6 +135,8 @@ const int LimitSwitch = 6;
 
 const int ci_Right_Motor = 8;
 const int ci_Left_Motor = 9;
+
+const int IRFlag = A0;
 
 
 
@@ -195,14 +197,16 @@ void setup() {
   ArmMotor.write(90);
 
   //Set up LAMotor for pyramid
-  LAPyramid.attach(12);
+  LAPyramid.attach(13);
   LAPyramid.write(0);
+  delay(1000);
   LAPyramid.detach();
 
   //Set up pivot motor
-  PivotMotor.attach(13);
+  PivotMotor.attach(12);
   PivotMotor.write(0);
-  PivotMotor.detach();
+  delay(1000);
+  //PivotMotor.detach();
 
 
 
