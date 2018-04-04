@@ -17,7 +17,7 @@
 #include <Wire.h>
 #include <I2CEncoder.h>
 
-#include <SoftwareSerial.h> //Not sure where to get this if you don't already have it.
+//#include <SoftwareSerial.h> //Not sure where to get this if you don't already have it.
 
 Servo servo_RightMotor;
 Servo servo_LeftMotor;
@@ -31,7 +31,7 @@ Servo PivotMotor;   //drop down arm to grab and pivot puramid
 I2CEncoder encoder_RightMotor;
 I2CEncoder encoder_LeftMotor;
 
-SoftwareSerial IRSensor(A3, A3);
+//SoftwareSerial IRSensor(A3, A3);
 
 
 // Uncomment keywords to enable debugging output
@@ -91,7 +91,6 @@ byte b_HighByte;
 
 unsigned int ui_Motors_Speed = 1600;        // Default run speed
 
-
 unsigned long ul_3_Second_timer = 0;
 unsigned long ul_Display_Time;
 unsigned long ul_Calibration_Time;
@@ -138,24 +137,35 @@ const int ci_Left_Motor = 9;
 
 const int IRFlag = A0;
 
-
-
-
 unsigned int ui_Left_Motor_Speed;
 unsigned int ui_Right_Motor_Speed;
 long l_Left_Motor_Position;
 long l_Right_Motor_Position;
-unsigned long EchoTimeSide;
-unsigned long EchoTimeFront;
 
+//Robot Variables--------------------------------------------------------------------------
+float EchoTimeSide;
+float EchoTimeFront;
+bool Start = false;
 bool CubeGrabbed = false;
 bool CubeDetected = false;
-long int StageCounter = 1;
+int StageCounter = 1;
+int CubeStep = 0;
 bool Corner = false;
 bool PyramidFound = false;
 int ArmLocation1 = 90;
 
+//VARIABLES FOR PING----------------------------------------------------------------------
+unsigned int SamplesFront = 1;
+float CmFront = 0;
+float FrontAvg = 0;
+float TotFront = 0;
+bool FrontReady = false;
 
+unsigned int SamplesSide = 1;
+float CmSide = 0;
+float SideAvg = 0;
+float TotSide = 0;
+bool SideReady = false;
 //-----------------------------------------------------------------------------
 
 void setup() {
@@ -182,19 +192,22 @@ void setup() {
 
   //set up limit switch
   pinMode(LimitSwitch, INPUT);
-
+  /*Code for IR micro cont.
   IRSensor.begin(2400);
   pinMode(A3, INPUT); //Use these in set up. It's important
-
+  */
+  
   //Set up Cube Grabbing servo
   CubeMotor.attach(10);
   CubeMotor.write(180);
+  delay(1000);
+  CubeMotor.detach();
 
   //Set up cube grabbing arm servo
   ArmMotor.attach(11);
-  ArmMotor.write(0);
+  ArmMotor.write(120);  
   delay(1000);
-  ArmMotor.write(90);
+  ArmMotor.detach();
 
   //Set up LAMotor for pyramid
   LAPyramid.attach(13);
@@ -204,19 +217,9 @@ void setup() {
 
   //Set up pivot motor
   PivotMotor.attach(12);
-  PivotMotor.write(0);
+  PivotMotor.write(40);
   delay(1000);
   //PivotMotor.detach();
-
-
-
-
-
-
-
-
-  // set up motor enable switch
-  pinMode(ci_Motor_Enable_Switch, INPUT);
 
   // set up encoders. Must be initialized in order that they are chained together,
   // starting with the encoder directly connected to the Arduino. See I2CEncoder docs
@@ -226,8 +229,6 @@ void setup() {
   encoder_RightMotor.init(1.0 / 3.0 * MOTOR_393_SPEED_ROTATIONS, MOTOR_393_TIME_DELTA);
   encoder_RightMotor.setReversed(true);  // adjust for positive count when moving forward
 
-
-
   // read saved values from EEPROM
   b_LowByte = EEPROM.read(ci_Left_Motor_Offset_Address_L);
   b_HighByte = EEPROM.read(ci_Left_Motor_Offset_Address_H);
@@ -236,14 +237,59 @@ void setup() {
   b_HighByte = EEPROM.read(ci_Right_Motor_Offset_Address_H);
   ui_Right_Motor_Offset = word(b_HighByte, b_LowByte);
 
-
-
-
 }
 
-// ******************************* LOOP **********************************************//
+void loop(){
+  
+  if (CharliePlexM::ui_Btn){
+    if (bt_Do_Once == false){
+      bt_Do_Once = true;
+      Start = true;
+    }
+  }
+  else{
+    bt_Do_Once = LOW;
+  }
+
+  if(Start){
+
+    //Serial.println("Stage Pos.");
+    //Serial.println(StageCounter);
+    
+    switch(StageCounter){
+    
+    case 1:
+      
+      //Serial.println("Stage 1");
+      //delay(500);
+      //if cube it not detected...follow wall and find cube
+      if (CubeStep == 0){
+        FollowWall();
+        Cube();
+      }
+  
+      //if cube is detected...get cube
+      if (CubeStep >= 1){
+        Serial.println("Cube flag UP");
+        Cube();
+      }
+    
+    break;
+    
+    case 2:
+      Serial.println("Stage 2");
+      GetPyramid();
+    break;
+    
+    }  
+  }
+  
+}
 
 
+// ******************************* LOOP **********************************************
+
+/*
 void loop()
 {
   if ((millis() - ul_3_Second_timer) > 3000)
@@ -298,9 +344,9 @@ void loop()
         break;
       }
 
-    //***********************************************************************************//
-    //****************************** ROBOT CODE *****************************************//
-    //***********************************************************************************//
+    //***********************************************************************************
+    //****************************** ROBOT CODE *****************************************
+    //***********************************************************************************
 
     case 1:    //Robot Run after 3 seconds
       {
@@ -457,6 +503,7 @@ void loop()
     Indicator();
   }
 }
+*/
 
 // set mode indicator LED state
 void Indicator()
